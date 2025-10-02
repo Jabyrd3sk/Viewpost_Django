@@ -1,0 +1,25 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Search Users{% endblock %}
+
+{% block content %}
+  <h2>Results for "{{ query }}"</h2>
+  {% if results %}
+    <ul class="list-group">
+        {% for user in results %}
+          <li class="list-group-item">
+            <a href="{% url 'accounts:profile' user.username %}">@{{ user.username }}</a>
+          </li>
+        {% endfor %}
+    </ul>
+  {% else %}
+    {% if query %}
+      <p>No users found matching "{{ query }}".</p>
+    {% else %}
+      <p>Enter a username above to search.</p>
+    {% endif %}
+  {% endif %}
+  <div class="">
+    <button type="button" onclick="history.back()" class="btn btn-sm btn-secondary">Back</button>
+  </div>
+{% endblock %}

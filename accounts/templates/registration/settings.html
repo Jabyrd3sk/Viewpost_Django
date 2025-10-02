@@ -1,0 +1,58 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+  {% block page_header %}
+    <h1 class="align-items-center">Account Settings</h1><hr>
+  {% endblock %}
+
+  <section class="card-body mb-3">
+    <h3>Profile</h3>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-light">Edit profile</a>
+    </form>
+  </section>
+  <hr>
+
+  <section>
+    <h3>Security</h3>
+    <p>
+        <a href="{% url 'accounts:password_change' %}">Change your password</a>
+    </p>
+    <p>
+      <strong>Email:</strong> {{ request.user.email }}
+      <a href="{% url 'accounts:change_email' %}">Change email</a>
+    </p>
+  </section>
+  <hr>
+
+  <section>
+    <h3>Display</h3>    
+    <form method="post">
+      {% csrf_token %}
+      {{ theme_form.as_p }}
+      <button name="update_theme" class="btn btn-outline-primary btn-sm">
+      Save Theme
+    </button>
+  </form>
+  </section><hr>
+
+  <section>
+    <h3>Account</h3>
+    <p>
+      <form method="post" action="{% url 'accounts:logout' %}">
+          {% csrf_token %}
+          <button class="btn btn-secondary">Log out</button>
+      </form>
+      <!-- <form method="post" action="{% url 'accounts:delete_account'%}" 
+          onsubmit="return confirm('Are you sure want to delete your account?');">
+          {% csrf_token %}
+          <button type="submit" style="color: red;">Delete account</button>
+      </form> -->
+      <a href="{% url 'accounts:delete_account' %}" class="btn btn-danger">Delete account</a>
+    </p>
+  </section>
+
+{% endblock %}

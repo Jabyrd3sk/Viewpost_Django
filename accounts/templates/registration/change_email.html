@@ -1,0 +1,26 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Change Email{% endblock %}
+
+{% block content %}
+{% block page_header %}
+  <h2>Change your email address</h2><hr>
+{% endblock %}
+    {% if messages %}
+      <ul class="messages">
+        {% for msg in messages %}
+          <li class="{{ msg.tags }}">{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Update Email" %}
+        <a href="{% url 'accounts:settings' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+
+
+
+{% endblock %}

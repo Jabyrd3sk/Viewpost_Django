@@ -1,0 +1,38 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% load humanize %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+
+{% block page_header %}<h2>Notifications</h2>{% endblock page_header %}
+  
+  <ul class="list-group">
+    {% for n in notifications %}
+      <li class="list-group-item {% if not n.read %} list-group-item-warning {% endif %}" >
+        
+        {# Actor link #}
+        <a href="{% url 'accounts:profile' n.actor.username %}">
+        <strong>@{{ n.actor.username }}</strong></a>&nbsp;
+
+        {% if n.target_ct and n.target_id %}
+        {# Remove 'post' from saved verb, then re-insert it as a link to your profile's post anchor #}
+          {% with base=n.verb|cut:" post" %}
+            {{ base }}
+            <a href="{% url 'accounts:profile'  n.recipient.username %}#post-{{ n.target_id }}">post</a>
+          {% endwith %}
+        {% else %}  
+          {{ n.verb }}.
+        {% endif %}
+
+        <br>
+        <small  class="text-muted">{{ n.timestamp|naturaltime }}</small>
+      </li>
+    {% empty %}
+      <li class="list-group-item">No notifications yet</li>
+    {% endfor %}
+  </ul>
+  <p class="">
+    <button type="button" onclick="history.back()" class="btn btn-sm btn-secondary">Back</button>
+  </p>
+{% endblock content %}

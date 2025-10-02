@@ -1,0 +1,180 @@
+{% load django_bootstrap5 %}
+<!doctype html>
+<html lang="en">
+<head>
+  
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ViewPost{% endblock %}</title>
+
+  
+  <style>
+    :root {
+  /* light colors */
+  --bg:      #fff;
+  --text:    #212529;
+  --card-bg: #f8f9fa;
+}
+body.dark {
+  /* dark overrides */
+  --bg:      #212529;
+  --text:    #f8f9fa;
+  --card-bg: #343a40;
+}
+body {
+  background: var(--bg);
+  color:      var(--text);
+}
+.card {
+  background: var(--card-bg);
+}
+
+  </style>
+</head>
+
+<body class="{% if user.is_authenticated and user.profile.theme == 'dark' %}dark{% endif %}">
+
+  {# Toast container for Django messages #}
+  <div
+    aria-live="polite"
+    aria-atomic="true"
+    class="position-fixed top-0 start-50 translate-middle-x p-3"
+    style="z-index: 1080;"
+  >
+    {% for msg in messages %}
+      <div
+        class="toast align-items-center text-bg-{{ msg.tags }} border-0 mb-2"
+        role="alert" aria-live="assertive" aria-atomic="true"
+        data-bs-delay="4000"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ msg }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                  data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <nav class="navbar navbar-expand-md navbar-light bg-light mb-4 border-bottom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'viewpost:index' %}">ViewPost</a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item"><a class="nav-link" href="{% url 'viewpost:post_list' %}">All Posts</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'viewpost:following' %}">Following</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'viewpost:new_post' %}">New Post</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' user.username %}">Profile</a></li>
+            <li class="nav-item">
+              <form action="{% url 'accounts:search_users' %}" method="get" class="d-flex"
+                style="display:inline; margin-left:1rem;">
+                <input  
+                  type="text"
+                  name="q"
+                  placeholder="Search users…"
+                  value="{{ request.GET.q|default:'' }}"
+                  style="padding:0.25rem; width:150px;"
+                  class="form-control me-2"
+                >
+                </form>
+            </li>
+            
+          </ul>
+        {% endif %}
+
+        <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center">
+          {% if user.is_authenticated %}
+            
+            <li class="nav-item">
+              <span class="navbar-text me-3">Hi, 
+                <a href="{% url 'accounts:profile' user.username %}" style="text-decoration: none;" >@{{ user.username }}</a></span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link position-relative" href="{% url 'notifications:list' %}">
+                🔔
+                {% if unread_notifications_count %}
+                  <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                    {{ unread_notifications_count }}
+                  </span>
+                {% endif %}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'accounts:settings' %}">Settings</a>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:register' %}">Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toastEls = document.querySelectorAll('.toast');
+      toastEls.forEach(el => new bootstrap.Toast(el).show());
+    });
+  </script>
+  <script>
+    // Utility to read the CSRF cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        document.cookie.split(';').forEach(c => {
+          const pair = c.trim().split('=');
+          if (pair[0] === name) cookieValue = decodeURIComponent(pair[1]);
+        });
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.js-like-form').forEach(form => {
+        form.addEventListener('submit', evt => {
+          evt.preventDefault();
+          fetch(form.action, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': csrftoken,
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+          })
+          .then(res => res.json())
+          .then(data => {
+            // Update the heart icon
+            const btn = form.querySelector('.js-like-btn');
+            btn.textContent = data.liked ? '❤️' : '🤍';
+  
+            // Update the count text
+            const countEl = form.nextElementSibling;
+            countEl.textContent = `${data.count} likes |`;
+          })
+          .catch(console.error);
+        });
+      });
+    });
+  </script>
+  
+</body>
+</html>

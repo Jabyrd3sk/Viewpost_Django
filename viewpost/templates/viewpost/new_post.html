@@ -1,0 +1,15 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+{% block page_header %}
+  <h2>Add a New Post</h2><hr>
+{% endblock %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% bootstrap_button button_type="submit" content="Post" %}
+    <a href="{% url 'viewpost:post_list' %}" class="btn btn-secondary">Back</a>
+  </form>
+
+{% endblock %}

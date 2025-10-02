@@ -1,0 +1,26 @@
+{% extends 'viewpost/base.html' %}
+{% block title %}Followers of {{ profile_owner.username }}{% endblock %}
+
+{% block content %}
+
+{% block page_header %}  
+  {% if request.user == profile.user %}
+    <h2>My Followers</h2>
+  {% else %}
+    <h2>Followers of @{{ profile_owner.username }}</h2>
+  {% endif%}
+{% endblock %}
+
+  <ul class="list-group">
+    {% for prof in profiles %}
+      <li class="list-group-item">
+        <a href="{% url 'accounts:profile' prof.user.username %}">@{{ prof.user.username}}</a>
+      </li>
+    {% empty %}
+      <li class="list-group-item">No one is following {{ profile_owner.username }} yet.</li>
+    {% endfor %}
+  </ul>
+  <p class="">
+    <button type="button" onclick="history.back()" class="btn btn-sm btn-secondary">Back</button>
+  </p>
+{% endblock %}

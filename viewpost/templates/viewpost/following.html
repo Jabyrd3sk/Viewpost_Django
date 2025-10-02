@@ -1,0 +1,61 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% load humanize%}
+
+{% block content %}
+{% block page_header %}  
+<h2>Post from People You Follow</h2>
+{% endblock %}
+  
+  {% for post in posts %}
+  <div id="post-{{ post.id }}" class="card mb-3">
+    <div class="card-body">
+    
+    <!-- profile picture -->
+    <div class="d-flex align-items-center">
+      {% if post.owner.profile.photo %}
+        <img src="{{ post.owner.profile.photo.url }}" 
+          alt="@{{ post.owner.username }}’s photo"
+          class="rounded-circle me-1"
+          width="27" height="27"
+          style="object-fit: cover;"
+        >
+      {% else %}
+        <div 
+          class="rounded-circle bg-secondary me-1"
+          style="width:27px; height:27px;"
+        ></div>
+      {% endif %}
+      <a href="{% url 'accounts:profile' post.owner.username %}" class="text-decoration-none">@{{ post.owner.username }}</a>
+    </div>
+    
+    {% if post.image %}
+      <p><img src="{{ post.image.url }}" class="img-fluid rounded mb-2" alt="Post image" width="200"></p>
+    {% endif %}
+    <p>{{ post.content }}</p>
+
+    <!-- Likes & comments-->
+    <p>
+      <form action="{% url 'viewpost:like_post' post.id %}" method="post" style="display:inline; vertical-align: middle;">
+        {% csrf_token %}
+        <button type="submit" style="border:none; background:none; cursor: pointer; vertical-align: middle;">
+          {% if user in post.likes.all %}
+            ❤️
+          {% else %}
+            🤍
+          {% endif %}
+        </button>
+      </form>
+      <span style="vertical-align: middle;">{{ post.likes.count }} likes |</span>
+      <a href="{% url 'viewpost:comment_page' post.id %}" 
+        style="vertical-align: middle; text-decoration: none; color:inherit">
+        {{ post.comments.count }} comments</a>
+    </p>
+    <small>Posted: {{ post.created_at|naturaltime }}</small>
+  </div>
+  </div>
+{% empty %}
+  <p>No haven't posted anything yet.</p>
+  <p><a href="{% url 'viewpost:new_post' %}">New Post</a></p>
+{% endfor %}
+{% endblock %}

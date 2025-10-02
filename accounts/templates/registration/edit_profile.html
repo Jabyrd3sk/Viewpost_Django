@@ -1,0 +1,15 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+{% block page_header %}
+  <h2>Edit Your Profile</h2><hr>
+{% endblock %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% bootstrap_button button_type="submit" content="Save Changes" %}
+    <button type="button" onclick="history.back()" class="btn btn-sm btn-secondary"> Back</button>
+  </form>
+{% endblock %}

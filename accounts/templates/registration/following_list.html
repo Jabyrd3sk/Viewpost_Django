@@ -1,0 +1,22 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Who {{ profile_owner.username }} Follows{% endblock %}
+
+{% block content %}
+{% block page_header %}
+  <h2>@{{ profile_owner.username }} is Following</h2>
+{% endblock %}
+ 
+  <ul class="list-group">
+    {% for prof in profiles %}
+      <li class="list-group-item">
+        <a href="{% url 'accounts:profile' prof.user.username %}">@{{ prof.user.username}}</a>
+      </li>
+    {% empty %}
+      <li class="list-group-item">@{{ profile_owner.username }} isn't following anyone yet.</li>      
+    {% endfor %}
+  </ul>
+  <p class="">
+    <button type="button" onclick="history.back()" class="btn btn-sm btn-secondary">Back</button>
+  </p>
+{% endblock %}

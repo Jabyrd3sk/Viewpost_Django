@@ -1,0 +1,20 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+{% block page_header %}  
+  <h2>Are you sure you want to DELETE this post??</h2>
+{% endblock %}
+  <div id="post-{{ post.id }}" class="card mb-3" style="border:1px solid #ccc; padding:1rem; margin:1rem 0,">
+    {% if post.image %}
+      <img src="{{ post.image.url }}" alt="Post Image" width="200px">
+    {% endif %}
+    <p>{{ post.content }}</p>
+    <form method="post">
+      {% csrf_token %}
+      {% bootstrap_button button_type="submit" content="Yes, delete" %}
+      <a href="{% url 'accounts:profile' request.user.username %}">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

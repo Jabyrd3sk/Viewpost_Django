@@ -1,0 +1,15 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+{% block page_header %}
+  <h1>Welcome! let's get you started.</h1>
+{% endblock %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% bootstrap_button button_type="submit" content="Register"%}
+  </form>
+
+{% endblock %}

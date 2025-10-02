@@ -1,0 +1,86 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Welcome to ViewPost{% endblock %}
+
+{% block content %}
+<style>
+    .hero{
+        text-align: center;
+        padding: 4rem 1rem;
+        background: #f5f5f5;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    .features{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    .feature{
+        flex: 1 1 250px;
+        max-width: 300px;
+        text-align: center;
+    }
+    .cta-buttons a{
+        display: inline-block;
+        margin: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .btn-primary{
+        background: #007bff;
+        color: white;
+    }
+    .btn-secondary{
+        background: #6c757d;
+        color: white;
+    }
+</style>
+
+<div class="hero">
+    <h1>Welcome to ViewPost</h1>
+    <p style="font-size:1.25rem; color:#555;">
+        Share your moments, follow friends, and join conversation.
+    </p>
+    {% if user.is_authenticated %}
+    <div style=" font-size: xx-large;  text-align: center;">
+        {% if user.profile.photo %}
+          <img src="{{ user.profile.photo.url }}" style="width:150px; height:150px; margin: 0 auto; border-radius:50%; object-fit:cover;"><br>
+        {% else %}
+          <div style="width:150px; height:150px; margin:0 auto; border-radius:50%; background:#ccc;"></div><br>
+        {% endif %}
+        Hi, <a href="{% url 'accounts:profile' user.username %}" 
+                style="text-decoration: solid; font-weight:bold ; align-content: center;">{{ user.username }}</a>
+    </div>
+    {% else %}
+    <div class="cta-buttons">
+        <a href="{% url 'accounts:register' %}" class="btn-primary">Get Started</a>
+        <a href="{% url 'accounts:login' %}" class="btn-secondary">Log In</a>
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="features">
+    <div class="feature">
+        <h3>📸 Share Photos</h3>
+        <p>Upload images and let your friends see what you're up to in a flash.</p>
+    </div>
+    <div class="feature">
+        <h3>💬 Comment & Like</h3>
+        <p>Engage with posts-drop your thoughts or show someone ❤️.</p>
+    </div>
+    <div class="feature">
+        <h3>👥 Follow Friends</h3>
+        <p>Build your own feed: follow people you care about and never miss a post.</p>
+    </div>
+</div>
+
+<div style="text-align: center; color: #666; font-size: 0.9rem;">
+    <p>No credit card required • Secure & private • Start sharing today</p>
+</div>
+{% endblock %}

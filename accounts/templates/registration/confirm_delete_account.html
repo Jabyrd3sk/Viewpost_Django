@@ -1,0 +1,17 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Confirm Account Deletion{% endblock %}
+
+{% block content %}
+{% block page_header %}
+  <h2>Delete your account</h2><hr>
+{% endblock %}
+  <h5>To confirm, please enter your current password:</h5>
+  <form method="post" onsubmit="return confirm('Are you sure want to delete your account?')">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button type="submit" class="btn btn-sm btn-danger">Yes, delete my account</button>
+    <a href="{% url 'accounts:settings' %}">Cancel</a>
+  </form>
+
+{% endblock %}

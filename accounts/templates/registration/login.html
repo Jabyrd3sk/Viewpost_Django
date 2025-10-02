@@ -1,0 +1,75 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">Log In to ViewPost</h3>
+        
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {# Non-field errors #}
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for err in form.non_field_errors %}
+                <div>{{ err }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {# Username/email field #}
+          <div class="mb-3">
+            <label for="id_username" class="form-label">Username or Email</label>
+            <input
+              type="text"
+              name="username"
+              id="id_username"
+              class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+              placeholder="Enter your username or email"
+              required
+            >
+            {% for err in form.username.errors %}
+              <div class="invalid-feedback">{{ err }}</div>
+            {% endfor %}
+          </div>
+
+          {# Password field #}
+          <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="id_password"
+              class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+              placeholder="Enter your password"
+              required
+            >
+            {% for err in form.password.errors %}
+              <div class="invalid-feedback">{{ err }}</div>
+            {% endfor %}
+          </div>
+
+          {# Submit button #}
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Log In</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <a href="{% url 'accounts:password_reset' %}">Forgot your password?</a>
+        </div>
+        <div class="text-center mt-2">
+          <small>
+            Don't have an account?
+            <a href="{% url 'accounts:register' %}">Register</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

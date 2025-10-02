@@ -1,0 +1,133 @@
+{% extends 'viewpost/base.html' %}
+{% load django_bootstrap5 %}
+{% load humanize %}
+{% block title %}Comments on “{{ post.content|truncatechars:30 }}”{% endblock %}
+
+{% block content %}
+{% block page_header %}<h2>Comments on {{ post.owner.username }}'s Post</h2>{% endblock %}
+<div class="container py-4">
+
+  {# Post preview #}
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        {% if post.owner.profile.photo %}
+          <img src="{{ post.owner.profile.photo.url }}" 
+            alt="@{{ post.owner.username }}’s photo"
+            class="rounded-circle me-1"
+            width="27" height="27"
+            style="object-fit: cover;"
+          >
+        {% else %}
+          <div 
+            class="rounded-circle bg-secondary me-1"
+            style="width:24px; height:24px;"
+          ></div>
+        {% endif %}
+        <a href="{% url 'accounts:profile' post.owner.username %}" class="text-decoration-none">@{{ post.owner.username }}</a>
+      </div>
+      <p class="card-text">{{ post.content }}</p>
+      {% if post.image %}
+        <img src="{{ post.image.url }}" class="img-fluid rounded mb-2" style="max-width:300px;">
+      {% endif %}
+      <p><small class="text-muted">Posted {{ post.created_at|naturaltime }}</small></p>
+    </div>
+  </div>
+
+  <!-- Top-level comments -->
+  <h4 class="mb-3">Comments</h4>
+  {% for comment in top_comments %}
+    <div class="card mb-3" id="comment-{{ comment.id }}">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <a href="{% url 'accounts:profile' comment.author.username %}">
+              <strong>@{{ comment.author.username }}</strong>
+            </a>
+            &middot;
+            <small class="text-muted">{{ comment.date_added|naturaltime }}</small>
+          </div>
+          <div class="btn-group">
+            <button
+              class="btn btn-sm btn-outline-primary reply-btn"
+              data-comment-id="{{ comment.id }}"
+            >Reply</button>
+            {% if comment.replies.count > 0 %}
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                data-bs-toggle="collapse"
+                data-bs-target="#replies-{{ comment.id }}"
+              >
+                {{ comment.replies.count }} repl{{ comment.replies.count|pluralize }}
+              </button>
+            {% endif %}
+          </div>
+        </div>
+        <p class="mt-2">{{ comment.text }}</p>
+
+        {# Inline reply form container #}
+        <div id="reply-form-{{ comment.id }}" class="mt-2"></div>
+
+        <!-- Collapsible replies -->
+        {% if comment.replies.count > 0 %}
+          <div class="collapse ms-4 mt-3" id="replies-{{ comment.id }}">
+            {% for reply in comment.replies.all %}
+              {# render reply similarly, but no further nesting for brevity #}
+              <div class="card mb-2">
+                <div class="card-body">
+                  <a href="{% url 'accounts:profile' reply.author.username %}">
+                    <strong>@{{ reply.author.username }}</strong>
+                  </a>
+                  &middot;
+                  <small class="text-muted">{{ reply.date_added|naturaltime }}</small>
+                  <p class="mt-2">{{ reply.text }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">Start a conversation</p>
+  {% endfor %}
+
+   <!-- New top-level comment form -->
+  <h4>Add comment</h4>
+  <form method="post" action="{% url 'viewpost:add_comment' post.id %}">
+    {% csrf_token %}
+    {% bootstrap_field form.text show_label=False %}
+    {% bootstrap_button content="Post Comment" button_type="submit" %}
+    <button onclick="history.back()" class="btn btn-secondary ms-2">Back</button>
+  </form>
+</div>
+
+ <!-- JS for inline reply forms  -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  function getCookie(n){let v=document.cookie.match('(^|;)\\s*'+n+'=([^;]+)');return v?v.pop():''}
+
+  document.querySelectorAll('.reply-btn').forEach(btn => {
+    btn.onclick = e => {
+      e.preventDefault();
+      const cid = btn.dataset.commentId;
+      const container = document.getElementById(`reply-form-${cid}`);
+      if (container.innerHTML.trim()) return;  // already open
+
+      container.innerHTML = `
+        <form method="post" action="{% url 'viewpost:add_comment' post.id %}">
+          <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
+          <div class="mb-2">
+            <textarea name="text" rows="2" class="form-control" placeholder="Your reply…" required></textarea>
+          </div>
+          <input type="hidden" name="parent" value="${cid}">
+          <button type="submit" class="btn btn-primary btn-sm">Reply</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm ms-2 cancel-reply">Cancel</button>
+        </form>
+      `;
+      container.querySelector('.cancel-reply').onclick = () => container.innerHTML = '';
+    };
+  });
+});
+</script>
+{% endblock %}
