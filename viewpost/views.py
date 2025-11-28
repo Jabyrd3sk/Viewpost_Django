@@ -124,13 +124,13 @@ def comment_page(request, post_id):
             comment.post = post
             comment.author = request.user
             comment.save()
-            # handling threading...
+            # handling threading.........
             parent_id = form.cleaned_data.get('parent')
             if parent_id:
                 comment.parent = Comment.objects.get(id=parent_id)
             comment.save()
             
-            # Notify post owner (unless they commented on their on post)
+            # Notify post owner, except if they commented on their on post
             if post.owner != user:
                 Notification.objects.create(
                     recipient=post.owner,

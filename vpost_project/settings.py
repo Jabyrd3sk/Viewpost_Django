@@ -149,11 +149,11 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEBUG = True
 
-# For development-prints emails to console
+# prints emails to console (for dev)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'no-reply@viewpost.local'
 
-# In production, switch to SMTP
+# In production, switch to SMTP (having some issues, not working yet)
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_PORT = 587

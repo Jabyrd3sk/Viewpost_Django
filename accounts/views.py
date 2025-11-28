@@ -26,9 +26,10 @@ def register(request):
                 [user.email],
                 fail_silently=False
             )
-            # Queue up a one-time "success" message
+            # a "success" message when sucessfully registered
             messages.success(request, "You've Successfully registered! Please log in to continue")
             # login(request, user)
+            
             # Don't auto login, send them to the login page
             return redirect('accounts:login')
     else:
